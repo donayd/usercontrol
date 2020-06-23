@@ -1,0 +1,72 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="success">
+    <ion-title>
+      Bienvenido
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" color="light">
+  <form #f="ngForm" (ngSubmit)="submit(f)">
+    <ion-grid style="margin-top: 0px;">
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">
+              Usuario
+            </ion-label>
+            <ion-input
+              required
+              minlength="1"
+              ngModel
+              name="username"
+              #username="ngModel"
+              id="username"
+              class="form-control"
+              type="text"
+            ></ion-input>
+            <ion-icon
+              name="person"
+              slot="end"
+              (click)="username.reset()"
+            ></ion-icon>
+          </ion-item>
+          <ion-item style="margin-top: 6px;">
+            <ion-label position="floating">
+              Contraseña
+            </ion-label>
+            <ion-input
+              required
+              minlength="1"
+              ngModel
+              name="password"
+              #password="ngModel"
+              id="password"
+              class="form-control"
+              [type]="passwordType"
+              show-hide-input
+            ></ion-input>
+            <ion-icon
+              slot="end"
+              [name]="iconName"
+              (click)="togglePasswordMode()"
+            ></ion-icon>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row style="margin-top: 24px;">
+        <ion-col>
+          <ion-button
+            type="submit"
+            value="Submit"
+            shape="round"
+            fill="outline"
+            [disabled]="f.invalid"
+          >
+            Ingresar
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

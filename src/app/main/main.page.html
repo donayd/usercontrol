@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar color="success">
+    <ion-buttons slot="end">
+      <ion-button color="light" (click)="signout()">
+        <ion-icon name="log-out" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Admin</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" size-sm="8" offset-sm="2" class="ion-text-center">
+        <ion-list *ngIf="userlist">
+          <ion-item-sliding *ngFor="let user of userlist">
+            <ion-item>
+              <ion-thumbnail slot="start">
+                <ion-img src="../assets/master.png"></ion-img>
+              </ion-thumbnail>
+              <ion-label>
+                <h2>{{ user.id }} - {{ user.username }}</h2>
+                <p>{{ user.password }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item-options side="start">
+              <ion-item-option color="success" (click)="editUser(user)">
+                <ion-icon slot="icon-only" name="pencil"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+            <ion-item-options side="end">
+              <ion-item-option color="danger" (click)="trashUser(user)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" color="success" style="margin: 16px">
+    <ion-fab-button><ion-icon name="add" (click)="createUser()"></ion-icon></ion-fab-button>
+  </ion-fab>
+</ion-content>
