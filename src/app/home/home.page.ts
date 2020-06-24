@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AlertController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { User } from '../models/user.model';
@@ -9,11 +9,11 @@ import { User } from '../models/user.model';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage {
 
   passwordType = 'password';
   iconName = 'eye-off';
-  userlist: User[];
+  userList: User[];
 
   constructor(
     private platform: Platform,
@@ -21,8 +21,18 @@ export class HomePage implements OnInit {
     public alertController: AlertController
   ) { }
 
-  ngOnInit() {
-    this.userlist = JSON.parse(localStorage.getItem('users'));
+  ionViewDidEnter() {
+    this.userList = JSON.parse(localStorage.getItem('users'));
+    if(this.userList === null || this.userList.length < 1) {
+      let admin: User = {
+        'id': 0,
+        'username': 'admin',
+        'password': '123'
+      }
+      this.userList = [admin];
+      localStorage.setItem('users', JSON.stringify(this.userList));
+      localStorage.setItem('index', '0');
+    }
   }
 
   togglePasswordMode() {
@@ -33,9 +43,10 @@ export class HomePage implements OnInit {
   submit(model: any) {
     const username = model.value.username;
     const password = model.value.password;
-    if ( this.userlist.findIndex( user => user.username === username 
-      && user.password === password) !== -1 ){
-      this.router.navigate(['main']);
+    let index = this.userList.findIndex( user => user.username === username 
+      && user.password === password)
+    if ( index !== -1 ){
+      this.router.navigate(['main'], {queryParams: {index}});
     } else {
       this.presentAlert();
     }

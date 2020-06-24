@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { AlertController, NavController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
 import { User } from '../models/user.model';
 
 @Component({
@@ -10,15 +10,24 @@ import { User } from '../models/user.model';
 })
 export class MainPage implements OnInit {
 
-  userlist: User[];
+  userList: User[];
+  currentUser: User;
 
   constructor(
-    public router: Router,
+    public navCtrl: NavController,
+    private route: ActivatedRoute,
     public alertController: AlertController,
   ) { }
 
   ngOnInit() {
-    this.userlist = JSON.parse(localStorage.getItem('users'));
+    this.getData();
+  }
+
+  getData() {
+    console.log("Actualizando...");
+    this.userList = JSON.parse(localStorage.getItem('users'));
+    let index = this.route.snapshot.queryParamMap.get('index');
+    this.currentUser = this.userList[index];
   }
 
   createUser() {
@@ -34,7 +43,7 @@ export class MainPage implements OnInit {
   }
 
   signout() {
-    this.router.navigate(['home']);
+    this.navCtrl.pop();
   }
 
   async presentAlertCreate() {
@@ -60,17 +69,15 @@ export class MainPage implements OnInit {
           text: 'Aceptar',
           cssClass: 'success',
           handler: (data) => {
-            let newId = 0;
-            while( this.userlist.find(user => newId === user.id) != undefined){
-              newId = Math.floor(Math.random() * 10);
-            }
+            let newId = +localStorage.getItem('index') + 1;
+            localStorage.setItem('index', String(newId));
             let newUser: User = {
               'id': newId,
               'username': data.username,
               'password': data.password
             }
-            this.userlist.push(newUser);
-            localStorage.setItem('users', JSON.stringify(this.userlist));
+            this.userList.push(newUser);
+            localStorage.setItem('users', JSON.stringify(this.userList));
           }
         }
       ]
@@ -80,7 +87,7 @@ export class MainPage implements OnInit {
   }
 
   async presentAlertEdit(user: User) {
-    let index = this.userlist.findIndex( u => u.id === user.id);
+    let index = this.userList.findIndex( u => u.id === user.id);
     const alert = await this.alertController.create({
       header: 'Editar Usuario',
       inputs: [
@@ -112,8 +119,8 @@ export class MainPage implements OnInit {
               'username': data.username,
               'password': data.password
             }
-            this.userlist[index] = changeUser;
-            localStorage.setItem('users', JSON.stringify(this.userlist));
+            this.userList[index] = changeUser;
+            localStorage.setItem('users', JSON.stringify(this.userList));
           }
         }
       ]
@@ -125,7 +132,7 @@ export class MainPage implements OnInit {
   async presentAlertTrash(user: User) {
     const alert = await this.alertController.create({
       header: 'Eliminar Usuario',
-      message: 'Desea Eliminar a ' + user.username,
+      message: '¿Desea eliminar a ' + user.username + '?',
       buttons: [
         {
           text: 'Cancelar',
@@ -134,10 +141,9 @@ export class MainPage implements OnInit {
           text: 'Aceptar',
           cssClass: 'success',
           handler: () => {
-            let index = this.userlist.findIndex( u => u.id === user.id);
-            console.log(index);
-            this.userlist.splice(index, 1);
-            localStorage.setItem('users', JSON.stringify(this.userlist));
+            let index = this.userList.findIndex( u => u.id === user.id);
+            this.userList.splice(index, 1);
+            localStorage.setItem('users', JSON.stringify(this.userList));
           }
         }
       ]
